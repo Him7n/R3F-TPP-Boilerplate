@@ -44,6 +44,10 @@ const controlsRef = useRef();
         mesh.castShadow = true;
     });
 
+    // model.scene.children.forEach((mesh)=>{
+    //     mesh.castShadow = true;
+    // });
+
     // const controlRef=useRef<typeof OrbitControls>();
 
     // const controlsRef = useRef<OrbitControlsProps>()
@@ -81,11 +85,23 @@ dirOffest = Math.PI;
         }
 
 return dirOffest;   
-
+/**
+ *  Gandalf
+ */
 
 
     }
+    const model = useGLTF('./model.gltf');
+    // body.current.quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI);
+    //**
+    // Animate it
+    /*/
+*/
+console.log(model.scene);
+    
     useFrame((state,delta)=>{
+
+    // body.current.rotation = new THREE.Vector3(0,Math.PI,0);
 
         const {forward,left,right,jump,back} = getkeys();
         const impulse = {x:0,y:0,z:0}
@@ -146,7 +162,7 @@ return dirOffest;
         smoothCamera.lerp(cameraPosition, 0.1);
         // state.camera.position.copy(smoothCamera)
         // state.camera.lookAt(TargetPosition)
-        console.log(bodyposition)
+        // console.log(bodyposition)
         const cameraRotation = state.camera.rotation;
         // body.current.rotation(0, cameraRotation.y, 0);
         // body.current.rotation(state.camera.rotation);
@@ -163,13 +179,13 @@ return dirOffest;
         //offset
         let newdirOffset = directionoffest({forward,back,left,right});  
 
-console.log("newdirection offset ",newdirOffset);   
+// console.log("newdirection offset ",newdirOffset);   
         // const axis = new THREE.Vector3(0, 1, 0);
         //* rotating the model
         rotateQuaternion.setFromAxisAngle(
-            rotateangle,AngleYcameraDirection+newdirOffset
+            rotateangle,AngleYcameraDirection+newdirOffset+Math.PI
         )
-        console.log(body.current);
+        // console.log(body.current);
 
         body.current.quaternion.rotateTowards(rotateQuaternion,0.2);
         // body.current.setRotation(rotateQuaternion);
@@ -181,8 +197,15 @@ console.log("newdirection offset ",newdirOffset);
          walkdirection.applyAxisAngle(rotateangle,newdirOffset);
          
          //walk run velocity
-          const velocity= 5;
+          let velocity= 0;
+
           //MOVE MODELS
+
+if(forward || back || left || right){
+    velocity=5;
+}else{
+    velocity =0;
+}
 
           const movex = walkdirection.x*velocity*delta;
           const movez = walkdirection.z*velocity*delta;
@@ -210,7 +233,8 @@ if(controlsRef.current){
     <>
     <OrbitControls ref={controlsRef}   />
     {/* <RigidBody colliders="cuboid"  type='kinematic' restitution={0.2} friction={0} ref={body} > */}
-        <primitive object={hamburger.scene} scale={0.2} ref={body} />
+        {/* <primitive object={hamburger.scene} scale={0.2} ref={body}  rotation-y={Math.PI}  position-y={-1}/> */}
+        <primitive object={model.scene} scale={2} ref={body}  position-y={-1} castShadow={true} />
        
     {/* </RigidBody> */}
     </>
