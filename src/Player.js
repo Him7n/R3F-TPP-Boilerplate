@@ -1,5 +1,6 @@
 import {  OrbitControls, useGLTF } from '@react-three/drei'
-
+import { socket,charactersAtom } from './Socketmanager'
+import { useAtom } from 'jotai'
 // import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 import { RigidBody } from '@react-three/rapier'
@@ -19,8 +20,27 @@ import { useState } from 'react'
 
 
 
-const Player = () => {
+const Player = ({id,position,rotation,delta}) => {
 
+
+    /**
+     * 
+    *
+    *  SOCKET CONTROL CORDiNATES
+    * 
+    * 
+    * 
+
+     */
+
+    const [characters] = useAtom(charactersAtom);
+// finding me 
+    const character = characters.find((character)=>{return character.id == socket.id})
+console.log(position);
+console.log(position);
+console.log(delta)
+console.log(id);
+    // console.log(character);
 /**
  * 
  * 
@@ -69,9 +89,9 @@ dirOffest = -Math.PI/4;
             }
         }else if(back){
             if(left){
-                dirOffest = Math.PI/4 +Math.PI/2;
+                dirOffest = Math.PI/4 + Math.PI/2;
             }else if(right){
-                dirOffest = Math.PI/4 -Math.PI/2;
+                dirOffest = Math.PI +Math.PI/4;
 
             }else{
 dirOffest = Math.PI;
@@ -97,13 +117,14 @@ return dirOffest;
     // Animate it
     /*/
 */
-console.log(model.scene);
+// console.log(model.scene);
+useFrame((state,delta)=>{
     
-    useFrame((state,delta)=>{
-
     // body.current.rotation = new THREE.Vector3(0,Math.PI,0);
+    // console.log(getkeys());
 
         const {forward,left,right,jump,back} = getkeys();
+        // socket.emit()
         const impulse = {x:0,y:0,z:0}
         const torque ={x:0,y:0,z:0}
         const  impulseStrength = delta;
@@ -156,9 +177,9 @@ console.log(model.scene);
         cameraPosition.copy(bodyposition);
         cameraPosition.z += 5.25;
         cameraPosition.y += 2.65;
-        const TargetPosition = new THREE.Vector3();
-        TargetPosition.copy(bodyposition)
-        TargetPosition.y += 0.25;
+        // const TargetPosition = new THREE.Vector3();
+        // TargetPosition.copy(bodyposition)
+        // TargetPosition.y += 0.25;
         smoothCamera.lerp(cameraPosition, 0.1);
         // state.camera.position.copy(smoothCamera)
         // state.camera.lookAt(TargetPosition)
@@ -186,6 +207,8 @@ console.log(model.scene);
             rotateangle,AngleYcameraDirection+newdirOffset+Math.PI
         )
         // console.log(body.current);
+        console.log(AngleYcameraDirection+newdirOffset);
+        socket.emit("rotation",[AngleYcameraDirection+newdirOffset]);
 
         body.current.quaternion.rotateTowards(rotateQuaternion,0.2);
         // body.current.setRotation(rotateQuaternion);
@@ -199,6 +222,8 @@ console.log(model.scene);
          //walk run velocity
           let velocity= 0;
 
+
+          
           //MOVE MODELS
 
 if(forward || back || left || right){
@@ -207,8 +232,27 @@ if(forward || back || left || right){
     velocity =0;
 }
 
-          const movex = walkdirection.x*velocity*delta;
+// console.log(walkdirection);
+// console.log(walkdirection.x*velocity*delta);
+
+
+    const movex = walkdirection.x*velocity*delta;
           const movez = walkdirection.z*velocity*delta;
+
+          socket.emit('position', {
+            x: body.current.position.x+movex,
+            y: body.current.position.y,
+            z: body.current.position.z+movez,
+          });
+
+          socket.emit('delta', {
+            x: movex,
+            y: 0,
+            z: movez,
+          });
+
+        //   console.log(props);
+
           body.current.position.x +=movex;
           body.current.position.z+=movez;
 

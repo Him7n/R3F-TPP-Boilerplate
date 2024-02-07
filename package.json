@@ -14,10 +14,15 @@
     "@react-three/drei": "^9.32.4",
     "@react-three/fiber": "^8.8.7",
     "@react-three/rapier": "^1.1.1",
+    "cors": "^2.8.5",
+    "jotai": "^2.6.4",
+    "nodemon": "^3.0.3",
     "r3f-perf": "^6.5.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "^5.0.1",
+    "socket.io": "^4.7.4",
+    "socket.io-client": "^4.7.4",
     "three": "^0.145.0"
   },
   "browserslist": {
